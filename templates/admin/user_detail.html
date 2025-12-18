@@ -1,0 +1,177 @@
+{% extends 'admin/base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}{{ user.username }} - Пайдаланушы - Админ Панелі{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-user me-2"></i> Профиль</h5>
+            </div>
+            <div class="card-body text-center">
+                {% if user.profile_image %}
+                <img src="{{ user.profile_image.url }}" alt="{{ user.username }}" class="profile-img mb-3">
+                {% else %}
+                <div class="profile-img bg-secondary d-flex align-items-center justify-content-center mx-auto mb-3">
+                    <i class="fas fa-user fa-3x text-white"></i>
+                </div>
+                {% endif %}
+                
+                <h4>{{ user.get_full_name|default:user.username }}</h4>
+                <p class="text-muted">@{{ user.username }}</p>
+                
+                <div class="mb-3">
+                    <span class="badge {% if user.is_admin %}bg-danger{% elif user.is_leader %}bg-warning{% else %}bg-primary{% endif %}">
+                        {{ user.get_role_display }}
+                    </span>
+                    {% if user.is_active %}
+                    <span class="badge bg-success">Белсенді</span>
+                    {% else %}
+                    <span class="badge bg-danger">Белсенді емес</span>
+                    {% endif %}
+                    {% if user.is_staff %}
+                    <span class="badge bg-info">Қызметші</span>
+                    {% endif %}
+                </div>
+                
+                <div class="text-start">
+                    <p><i class="fas fa-envelope me-2"></i> {{ user.email }}</p>
+                    {% if user.student_id %}
+                    <p><i class="fas fa-id-card me-2"></i> {{ user.student_id }}</p>
+                    {% endif %}
+                    {% if user.phone %}
+                    <p><i class="fas fa-phone me-2"></i> {{ user.phone }}</p>
+                    {% endif %}
+                    <p><i class="fas fa-calendar me-2"></i> Тіркелген: {{ user.date_joined|date:"d.m.Y" }}</p>
+                    <p><i class="fas fa-sign-in-alt me-2"></i> Соңғы кіру: {{ user.last_login|date:"d.m.Y H:i"|default:"Ешқашан" }}</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card mt-3">
+            <div class="card-header">
+                <h6 class="mb-0"><i class="fas fa-users me-2"></i> Клубтарға мүшелік</h6>
+            </div>
+            <div class="card-body">
+                {% for membership in memberships %}
+                <div class="mb-2">
+                    <strong>{{ membership.club.name }}</strong>
+                    <span class="badge {% if membership.status == 'approved' %}bg-success{% elif membership.status == 'pending' %}bg-warning{% else %}bg-danger{% endif %} float-end">
+                        {{ membership.get_status_display }}
+                    </span>
+                    <br>
+                    <small class="text-muted">{{ membership.applied_at|date:"d.m.Y" }}</small>
+                </div>
+                {% empty %}
+                <p class="text-muted">Клубтарға мүшелік жоқ</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-edit me-2"></i> Пайдаланушыны өңдеу</h5>
+            </div>
+            <div class="card-body">
+                <form method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            {{ form.username|as_crispy_field }}
+                        </div>
+                        <div class="col-md-6">
+                            {{ form.email|as_crispy_field }}
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            {{ form.first_name|as_crispy_field }}
+                        </div>
+                        <div class="col-md-6">
+                            {{ form.last_name|as_crispy_field }}
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-4">
+                            {{ form.student_id|as_crispy_field }}
+                        </div>
+                        <div class="col-md-4">
+                            {{ form.phone|as_crispy_field }}
+                        </div>
+                        <div class="col-md-4">
+                            {{ form.role|as_crispy_field }}
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            {{ form.profile_image|as_crispy_field }}
+                        </div>
+                        <div class="col-md-3">
+                            {{ form.is_active|as_crispy_field }}
+                        </div>
+                        <div class="col-md-3">
+                            {{ form.is_staff|as_crispy_field }}
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> Өзгерістерді сақтау
+                        </button>
+                        <a href="{% url 'user_management' %}" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left"></i> Артқа
+                        </a>
+                        {% if not user.is_superuser %}
+                        <a href="{% url 'delete_user' user.id %}" class="btn btn-danger float-end">
+                            <i class="fas fa-trash"></i> Пайдаланушыны жою
+                        </a>
+                        {% endif %}
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <div class="card mt-3">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-envelope me-2"></i> Соңғы хабарлар</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6>Жіберілген хабарлар</h6>
+                        {% for message in sent_messages %}
+                        <div class="mb-2 p-2 border rounded">
+                            <strong>{{ message.receiver.username }}</strong>: {{ message.subject }}
+                            <br>
+                            <small class="text-muted">{{ message.sent_at|date:"d.m.Y H:i" }}</small>
+                        </div>
+                        {% empty %}
+                        <p class="text-muted">Хабарлар жоқ</p>
+                        {% endfor %}
+                    </div>
+                    <div class="col-md-6">
+                        <h6>Алынған хабарлар</h6>
+                        {% for message in received_messages %}
+                        <div class="mb-2 p-2 border rounded {% if not message.is_read %}bg-light{% endif %}">
+                            <strong>{{ message.sender.username }}</strong>: {{ message.subject }}
+                            <br>
+                            <small class="text-muted">{{ message.sent_at|date:"d.m.Y H:i" }}</small>
+                        </div>
+                        {% empty %}
+                        <p class="text-muted">Хабарлар жоқ</p>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

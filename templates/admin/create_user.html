@@ -1,0 +1,86 @@
+{% extends 'admin/base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Жаңа Пайдаланушы - Админ Панелі{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="mb-0"><i class="fas fa-user-plus me-2"></i> Жаңа пайдаланушы құру</h4>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    {% csrf_token %}
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            {{ form.username|as_crispy_field }}
+                        </div>
+                        <div class="col-md-6">
+                            {{ form.email|as_crispy_field }}
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            {{ form.first_name|as_crispy_field }}
+                        </div>
+                        <div class="col-md-6">
+                            {{ form.last_name|as_crispy_field }}
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            {{ form.student_id|as_crispy_field }}
+                        </div>
+                        <div class="col-md-6">
+                            {{ form.phone|as_crispy_field }}
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            {{ form.role|as_crispy_field }}
+                        </div>
+                        <div class="col-md-6">
+                            {{ form.password1|as_crispy_field }}
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            {{ form.password2|as_crispy_field }}
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> Пайдаланушыны құру
+                        </button>
+                        <a href="{% url 'user_management' %}" class="btn btn-secondary">
+                            <i class="fas fa-times"></i> Болдырмау
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <div class="card mt-4">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i> Ақпарат</h5>
+            </div>
+            <div class="card-body">
+                <ul>
+                    <li><strong>Админ:</strong> Барлық құқықтарға ие, жүйені толық басқара алады</li>
+                    <li><strong>Клуб лидері:</strong> Өз клубын басқара алады, хабарландырулар жасай алады</li>
+                    <li><strong>Мүше:</strong> Клубтарға қосыла алады, іс-шараларға қатыса алады</li>
+                    <li><strong>Пайдаланушы:</strong> Тек клубтарды көре алады, қосылуға өтініш бере алады</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

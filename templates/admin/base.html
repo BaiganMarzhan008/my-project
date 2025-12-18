@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+
+{% block sidebar %}
+<div class="sidebar d-none d-md-block">
+    <div class="sidebar-sticky">
+        <nav class="nav flex-column">
+            <div class="sidebar-header p-3">
+                <h5 class="text-center">
+                    <i class="fas fa-cogs"></i> Админ Панелі
+                </h5>
+                <hr>
+            </div>
+            <a class="nav-link {% if request.path == '/admin/' %}active{% endif %}" href="{% url 'admin_dashboard' %}">
+                <i class="fas fa-tachometer-alt me-2"></i> Дашборд
+            </a>
+            <a class="nav-link {% if 'admin/users' in request.path %}active{% endif %}" href="{% url 'user_management' %}">
+                <i class="fas fa-users me-2"></i> Пайдаланушылар
+            </a>
+            <a class="nav-link {% if 'clubs/create' in request.path %}active{% endif %}" href="{% url 'club_create' %}">
+                <i class="fas fa-plus-circle me-2"></i> Клуб құру
+            </a>
+            <a class="nav-link {% if 'clubs' in request.path and 'create' not in request.path %}active{% endif %}" href="{% url 'club_list' %}">
+                <i class="fas fa-list me-2"></i> Барлық клубтар
+            </a>
+            <a class="nav-link {% if 'statistics' in request.path %}active{% endif %}" href="{% url 'admin_statistics' %}">
+                <i class="fas fa-chart-bar me-2"></i> Статистика
+            </a>
+            <div class="mt-3 p-3">
+                <h6>Жылдам әрекеттер</h6>
+                <div class="d-grid gap-2">
+                    <a href="{% url 'create_user' %}" class="btn btn-sm btn-primary">
+                        <i class="fas fa-user-plus"></i> Жаңа пайдаланушы
+                    </a>
+                    <a href="{% url 'create_notification' %}" class="btn btn-sm btn-success">
+                        <i class="fas fa-bullhorn"></i> Хабарландыру
+                    </a>
+                </div>
+            </div>
+        </nav>
+    </div>
+</div>
+{% endblock %}
+
+{% block main_class %}main-content{% endblock %}

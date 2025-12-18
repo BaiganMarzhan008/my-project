@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+
+{% block title %}Жоюды Растау - Университет Клубтары{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header bg-danger text-white">
+                <h4 class="mb-0"><i class="fas fa-exclamation-triangle me-2"></i> Жоюды растау</h4>
+            </div>
+            <div class="card-body text-center">
+                <i class="fas fa-trash-alt fa-5x text-danger mb-4"></i>
+                <h4>Сіз шынымен жойғыңыз келе ме?</h4>
+                <p class="lead">
+                    <strong>{{ club.name }}</strong> клубы жойылады
+                </p>
+                <div class="alert alert-warning">
+                    <h6><i class="fas fa-warning"></i> Ескерту:</h6>
+                    <ul class="text-start">
+                        <li>Клубтың барлық мәліметтері жойылады</li>
+                        <li>Клуб мүшеліктері жойылады</li>
+                        <li>Клуб хабарландырулары жойылады</li>
+                        <li>Клуб іс-шаралары жойылады</li>
+                        <li><strong>Бұл әрекетті қайтару мүмкін емес!</strong></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="card-footer">
+                <form method="POST">
+                    {% csrf_token %}
+                    <div class="d-flex justify-content-between">
+                        <a href="{% url 'club_detail' club.pk %}" class="btn btn-secondary">
+                            <i class="fas fa-times"></i> Болдырмау
+                        </a>
+                        <button type="submit" class="btn btn-danger">
+                            <i class="fas fa-trash"></i> Иә, жою
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <div class="card mt-4">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i> Жойылатын клуб туралы</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><strong>Аты:</strong> {{ club.name }}</p>
+                        <p><strong>Санаты:</strong> {{ club.get_category_display }}</p>
+                        <p><strong>Құрылған күні:</strong> {{ club.created_at|date:"d.m.Y" }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>Мүшелер саны:</strong> {{ club.member_count }}</p>
+                        {% if club.leader %}
+                        <p><strong>Лидер:</strong> {{ club.leader.get_full_name|default:club.leader.username }}</p>
+                        {% endif %}
+                        <p><strong>Статус:</strong> 
+                            {% if club.is_active %}
+                            <span class="badge bg-success">Белсенді</span>
+                            {% else %}
+                            <span class="badge bg-danger">Белсенді емес</span>
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

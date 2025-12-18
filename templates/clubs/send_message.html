@@ -1,0 +1,118 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Хабар Жіберу - Университет Клубтары{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header bg-info text-white">
+                <h4 class="mb-0"><i class="fas fa-envelope me-2"></i> Хабар Жіберу</h4>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    {% csrf_token %}
+                    
+                    <div class="mb-3">
+                        {{ form.receiver|as_crispy_field }}
+                        <small class="text-muted">Хабарды кімге жібергіңіз келеді?</small>
+                    </div>
+                    
+                    <div class="mb-3">
+                        {{ form.subject|as_crispy_field }}
+                    </div>
+                    
+                    <div class="mb-3">
+                        {{ form.content|as_crispy_field }}
+                    </div>
+                    
+                    <div class="d-grid gap-2 mt-4">
+                        <button type="submit" class="btn btn-info">
+                            <i class="fas fa-paper-plane"></i> Хабарды жіберу
+                        </button>
+                        <a href="{% url 'inbox' %}" class="btn btn-secondary">
+                            <i class="fas fa-times"></i> Болдырмау
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <div class="card mt-4">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-users me-2"></i> Жылдам байланыс</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    {% for club in user_clubs|slice:":4" %}
+                    <div class="col-md-6 mb-3">
+                        <div class="card">
+                            <div class="card-body">
+                                <h6>{{ club.name }}</h6>
+                                {% if club.leader %}
+                                <p class="mb-2">
+                                    <strong>Лидер:</strong> {{ club.leader.get_full_name|default:club.leader.username }}
+                                </p>
+                                <button class="btn btn-sm btn-outline-primary" onclick="setReceiver({{ club.leader.id }}, '{{ club.leader.username }}')">
+                                    Хабар жіберу
+                                </button>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function setReceiver(userId, username) {
+        const receiverSelect = document.getElementById('id_receiver');
+        if (receiverSelect) {
+            receiverSelect.value = userId;
+        }
+        
+        const subjectInput = document.getElementById('id_subject');
+        if (subjectInput && !subjectInput.value) {
+            subjectInput.value = username + ' - хабар';
+        }
+        
+        const contentTextarea = document.getElementById('id_content');
+        if (contentTextarea) {
+            contentTextarea.focus();
+        }
+
+        alert(username + ' қабылдаушы ретінде таңдалды');
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.querySelector('form');
+        form.addEventListener('submit', function(e) {
+            const receiver = document.getElementById('id_receiver').value;
+            const subject = document.getElementById('id_subject').value;
+            const content = document.getElementById('id_content').value;
+            
+            if (!receiver) {
+                e.preventDefault();
+                alert('Қабылдаушыны таңдаңыз!');
+                return false;
+            }
+            
+            if (!subject.trim()) {
+                e.preventDefault();
+                alert('Хабар тақырыбын енгізіңіз!');
+                return false;
+            }
+            
+            if (!content.trim()) {
+                e.preventDefault();
+                alert('Хабар мәтінін енгізіңіз!');
+                return false;
+            }
+        });
+    });
+</script>
+{% endblock %}

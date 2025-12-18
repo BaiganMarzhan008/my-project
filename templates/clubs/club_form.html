@@ -1,0 +1,112 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}{{ action }} Клуб - Университет Клубтары{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0"><i class="fas fa-{% if action == 'Құру' %}plus-circle{% else %}edit{% endif %} me-2"></i> {{ action }} Клуб</h4>
+            </div>
+            <div class="card-body">
+                <form method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    
+                    <div class="mb-3">
+                        {{ form.name|as_crispy_field }}
+                    </div>
+                    
+                    <div class="mb-3">
+                        {{ form.description|as_crispy_field }}
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            {{ form.category|as_crispy_field }}
+                        </div>
+                        <div class="col-md-6">
+                            {{ form.logo|as_crispy_field }}
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            {{ form.leader|as_crispy_field }}
+                        </div>
+                        <div class="col-md-6">
+                            {{ form.is_active|as_crispy_field }}
+                        </div>
+                    </div>
+                    
+                    <div class="d-grid gap-2 mt-4">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> Сақтау
+                        </button>
+                        {% if club %}
+                        <a href="{% url 'club_detail' club.pk %}" class="btn btn-secondary">
+                            <i class="fas fa-times"></i> Болдырмау
+                        </a>
+                        {% else %}
+                        <a href="{% url 'club_list' %}" class="btn btn-secondary">
+                            <i class="fas fa-times"></i> Болдырмау
+                        </a>
+                        {% endif %}
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="card mt-4">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i> Клуб құру туралы</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6>Қажетті ақпарат:</h6>
+                        <ul>
+                            <li>Клубтың анық және тартымды аты</li>
+                            <li>Клубтың мақсаты мен қызметі туралы толық сипаттама</li>
+                            <li>Клубтың санаты (спорттық, академиялық, т.б.)</li>
+                            <li>Логотип (міндетті емес, бірақ ұсынылады)</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <h6>Кеңес беріледі:</h6>
+                        <ul>
+                            <li>Клуб аты оқулықтармен сәйкес болуы керек</li>
+                            <li>Сипаттама толық және түсінікті болуы керек</li>
+                            <li>Лидер таңдау кезінде жауаптылықты ескеріңіз</li>
+                            <li>Клубты белсенді ұстау үшін тұрақты белсенділік қажет</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.querySelector('form');
+        form.addEventListener('submit', function(e) {
+            const name = document.getElementById('id_name').value;
+            const description = document.getElementById('id_description').value;
+            
+            if (!name.trim()) {
+                e.preventDefault();
+                alert('Клуб атын енгізіңіз!');
+                return false;
+            }
+            
+            if (!description.trim()) {
+                e.preventDefault();
+                alert('Клуб сипаттамасын енгізіңіз!');
+                return false;
+            }
+        });
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,272 @@
+{% extends 'admin/base.html' %}
+
+{% block title %}Статистика - Админ Панелі{% endblock %}
+
+{% block extra_css %}
+<style>
+    .chart-container {
+        height: 300px;
+        position: relative;
+    }
+    .progress {
+        height: 25px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1><i class="fas fa-chart-bar me-2"></i> Статистика</h1>
+    <div class="btn-group">
+        <button type="button" class="btn btn-outline-primary" onclick="window.print()">
+            <i class="fas fa-print"></i> Басып шығару
+        </button>
+        <a href="{% url 'admin_dashboard' %}" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left"></i> Артқа
+        </a>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card">
+            <div class="card-body text-center">
+                <h1 class="display-4">{{ total_users }}</h1>
+                <p class="text-muted">Пайдаланушылар</p>
+                <small class="text-success">+{{ new_users_week }} соңғы аптада</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card">
+            <div class="card-body text-center">
+                <h1 class="display-4">{{ total_clubs }}</h1>
+                <p class="text-muted">Клубтар</p>
+                <small>{{ active_clubs }} белсенді</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card">
+            <div class="card-body text-center">
+                <h1 class="display-4">{{ total_memberships }}</h1>
+                <p class="text-muted">Мүшеліктер</p>
+                <small>{{ approved_memberships }} бекітілген</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card">
+            <div class="card-body text-center">
+                <h1 class="display-4">{{ new_notifications_week }}</h1>
+                <p class="text-muted">Соңғы аптадағы хабарландырулар</p>
+                <small>{{ new_memberships_week }} жаңа өтініш</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-chart-pie me-2"></i> Клубтар санаты бойынша</h5>
+            </div>
+            <div class="card-body">
+                <div class="chart-container">
+                    <canvas id="categoryChart"></canvas>
+                </div>
+                <div class="mt-3">
+                    {% for item in clubs_by_category %}
+                    <div class="mb-2">
+                        <div class="d-flex justify-content-between">
+                            <span>
+                                {% if item.category == 'academic' %}Академиялық
+                                {% elif item.category == 'sports' %}Спорттық
+                                {% elif item.category == 'cultural' %}Мәдени
+                                {% elif item.category == 'technical' %}Техникалық
+                                {% elif item.category == 'art' %}Өнер
+                                {% elif item.category == 'volunteer' %}Еріктілер
+                                {% elif item.category == 'other' %}Басқа
+                                {% else %}Белгісіз{% endif %}
+                            </span>
+                            <span>{{ item.count }}</span>
+                        </div>
+                        <div class="progress">
+                            <div class="progress-bar" role="progressbar" 
+                                 style="width: {% widthratio item.count total_clubs 100 %}%">
+                            </div>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <p class="text-muted">Клубтар табылмады</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-chart-bar me-2"></i> Пайдаланушы статусы бойынша</h5>
+            </div>
+            <div class="card-body">
+                <div class="chart-container">
+                    <canvas id="membershipChart"></canvas>
+                </div>
+                <div class="mt-3">
+                    {% for item in memberships_by_status %}
+                    <div class="mb-2">
+                        <div class="d-flex justify-content-between">
+                            <span>
+                                {% if item.status == 'pending' %}Күтуде
+                                {% elif item.status == 'approved' %}Бекітілген
+                                {% elif item.status == 'rejected' %}Қабылданбаған
+                                {% else %}{{ item.status }}{% endif %}
+                            </span>
+                            <span>{{ item.count }}</span>
+                        </div>
+                        <div class="progress">
+                            <div class="progress-bar bg-{% if item.status == 'approved' %}success{% elif item.status == 'pending' %}warning{% else %}danger{% endif %}" 
+                                 role="progressbar" 
+                                 style="width: {% widthratio item.count total_memberships 100 %}%">
+                            </div>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <p class="text-muted">Пайдаланушы табылмады</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+
+    const categoryCtx = document.getElementById('categoryChart');
+    
+    if (categoryCtx) {
+        const categoryLabels = [
+            {% for item in clubs_by_category %}
+            '{% if item.category == "academic" %}Академиялық{% elif item.category == "sports" %}Спорттық{% elif item.category == "cultural" %}Мәдени{% elif item.category == "technical" %}Техникалық{% elif item.category == "art" %}Өнер{% elif item.category == "volunteer" %}Еріктілер{% elif item.category == "other" %}Басқа{% else %}Белгісіз{% endif %}',
+            {% endfor %}
+        ];
+        
+        const categoryData = [
+            {% for item in clubs_by_category %}
+            {{ item.count }},
+            {% endfor %}
+        ];
+        
+        const categoryChart = new Chart(categoryCtx, {
+            type: 'pie',
+            data: {
+                labels: categoryLabels,
+                datasets: [{
+                    data: categoryData,
+                    backgroundColor: [
+                        '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', 
+                        '#9966FF', '#FF9F40', '#8AC926', '#1982C4'
+                    ]
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false
+            }
+        });
+    }
+    
+    const membershipCtx = document.getElementById('membershipChart');
+    
+    if (membershipCtx) {
+        const membershipLabels = [
+            {% for item in memberships_by_status %}
+            '{% if item.status == "pending" %}Күтуде{% elif item.status == "approved" %}Бекітілген{% elif item.status == "rejected" %}Қабылданбаған{% else %}{{ item.status }}{% endif %}',
+            {% endfor %}
+        ];
+        
+        const membershipData = [
+            {% for item in memberships_by_status %}
+            {{ item.count }},
+            {% endfor %}
+        ];
+        
+        const membershipChart = new Chart(membershipCtx, {
+            type: 'bar',
+            data: {
+                labels: membershipLabels,
+                datasets: [{
+                    label: 'Пайдаланушы',
+                    data: membershipData,
+                    backgroundColor: [
+                        {% for item in memberships_by_status %}
+                        '{% if item.status == "approved" %}#28a745{% elif item.status == "pending" %}#ffc107{% else %}#dc3545{% endif %}',
+                        {% endfor %}
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            stepSize: 1
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    const roleCtx = document.getElementById('roleChart');
+
+     if (roleCtx) {
+        const roleChart = new Chart(roleCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Админдер', 'Клуб лидерлері', 'Мүшелер', 'Пайдаланушылар'],
+                datasets: [{
+                    data: [
+                        {{ admin_count }},
+                        {{ leader_count }},
+                        {{ member_count }},
+                        {{ user_count }}
+                    ],
+                    backgroundColor: [
+                        '#dc3545', 
+                        '#ffc107', 
+                        '#0d6efd', 
+                        '#6c757d' 
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            padding: 20,
+                            usePointStyle: true,
+                        }
+                    }
+                }
+            }
+        });
+    }
+</script>
+{% endblock %}

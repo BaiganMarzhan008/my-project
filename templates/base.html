@@ -1,0 +1,805 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Университет Клубтары{% endblock %}</title>
+    
+    <!-- Добавьте эту строку в самое начало шаблона -->
+    {% load static %}
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --success-color: #27ae60;
+            --warning-color: #f39c12;
+            --danger-color: #e74c3c;
+            --light-color: #ecf0f1;
+            --dark-color: #2c3e50;
+            --bg-color: #f8f9fa;
+            --text-color: #212529;
+            --text-muted: #6c757d;
+            --card-bg: #ffffff;
+            --sidebar-bg: #ffffff;
+            --border-color: #dee2e6;
+            --white-text: #ffffff;  
+            --button-text: #ffffff;  
+        }
+        
+        [data-theme="dark"] {
+            --primary-color: #1a252f;
+            --secondary-color: #2980b9;
+            --success-color: #229954;
+            --warning-color: #d68910;
+            --danger-color: #c0392b;
+            --light-color: #2c3e50;
+            --dark-color: #f8f9fa;
+            --bg-color: #121212;
+            --text-color: #ffffff;
+            --text-muted: #b0b0b0;
+            --card-bg: #1e1e1e;
+            --sidebar-bg: #1a1a1a;
+            --border-color: #444444;
+            --white-text: #ffffff; 
+            --button-text: #ffffff;  
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            padding-top: 70px;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        
+        .navbar {
+            background-color: var(--primary-color) !important;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transition: background-color 0.3s;
+        }
+        
+        .navbar-brand {
+            font-weight: 700;
+            color: var(--white-text) !important;
+            font-size: 1.5rem;
+        }
+        
+        .nav-link {
+            color: rgba(255,255,255,0.9) !important;
+            font-weight: 500;
+        }
+        
+        .nav-link:hover {
+            color: var(--white-text) !important;
+        }
+        
+        .card {
+            border: none;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, background-color 0.3s, box-shadow 0.3s;
+            margin-bottom: 20px;
+            background-color: var(--card-bg);
+            color: var(--text-color);
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+        }
+        
+        .card-header {
+            background-color: var(--primary-color);
+            color: var(--white-text);
+            font-weight: 600;
+            border-bottom: none;
+        }
+        
+        .card-body {
+            color: var(--text-color);
+        }
+        
+        .card-text {
+            color: var(--text-color);
+        }
+        
+        .text-muted {
+            color: var(--text-muted) !important;
+        }
+        
+        .btn-primary {
+            background-color: var(--secondary-color) !important;
+            border-color: var(--secondary-color) !important;
+            color: var(--button-text) !important;
+        }
+        
+        .btn-primary:hover, .btn-primary:focus, .btn-primary:active {
+            background-color: #2980b9 !important;
+            border-color: #2980b9 !important;
+            color: var(--button-text) !important;
+        }
+        
+        .btn-success {
+            background-color: var(--success-color) !important;
+            border-color: var(--success-color) !important;
+            color: var(--button-text) !important;
+        }
+        
+        .btn-success:hover, .btn-success:focus, .btn-success:active {
+            background-color: #229954 !important;
+            border-color: #229954 !important;
+            color: var(--button-text) !important;
+        }
+        
+        .btn-warning {
+            background-color: var(--warning-color) !important;
+            border-color: var(--warning-color) !important;
+            color: var(--button-text) !important;
+        }
+        
+        .btn-warning:hover, .btn-warning:focus, .btn-warning:active {
+            background-color: #d68910 !important;
+            border-color: #d68910 !important;
+            color: var(--button-text) !important;
+        }
+        
+        .btn-danger {
+            background-color: var(--danger-color) !important;
+            border-color: var(--danger-color) !important;
+            color: var(--button-text) !important;
+        }
+        
+        .btn-danger:hover, .btn-danger:focus, .btn-danger:active {
+            background-color: #c0392b !important;
+            border-color: #c0392b !important;
+            color: var(--button-text) !important;
+        }
+        
+        .btn-outline-primary {
+            color: var(--secondary-color) !important;
+            border-color: var(--secondary-color) !important;
+            background-color: transparent !important;
+        }
+        
+        .btn-outline-primary:hover, .btn-outline-primary:focus, .btn-outline-primary:active {
+            background-color: var(--secondary-color) !important;
+            color: var(--button-text) !important;
+        }
+        
+        .btn-outline-success {
+            color: var(--success-color) !important;
+            border-color: var(--success-color) !important;
+            background-color: transparent !important;
+        }
+        
+        .btn-outline-success:hover, .btn-outline-success:focus, .btn-outline-success:active {
+            background-color: var(--success-color) !important;
+            color: var(--button-text) !important;
+        }
+        
+        .badge-primary {
+            background-color: var(--secondary-color);
+            color: var(--white-text);
+        }
+        
+        .badge-success {
+            background-color: var(--success-color);
+            color: var(--white-text);
+        }
+        
+        .badge-warning {
+            background-color: var(--warning-color);
+            color: var(--white-text);
+        }
+        
+        .badge-danger {
+            background-color: var(--danger-color);
+            color: var(--white-text);
+        }
+        
+        .sidebar {
+            position: fixed;
+            top: 70px;
+            left: 0;
+            bottom: 0;
+            width: 250px;
+            background-color: var(--sidebar-bg);
+            box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+            z-index: 1000;
+            padding-top: 20px;
+            overflow-y: auto;
+            transition: background-color 0.3s;
+        }
+        
+        .sidebar-sticky {
+            position: relative;
+            top: 0;
+            height: calc(100vh - 70px);
+            padding-top: 0.5rem;
+            overflow-x: hidden;
+            overflow-y: auto;
+        }
+        
+        .sidebar .nav-link {
+            color: var(--text-color) !important;
+            padding: 0.75rem 1rem;
+            border-left: 4px solid transparent;
+            transition: all 0.3s;
+        }
+        
+        .sidebar .nav-link:hover {
+            background-color: var(--light-color);
+            border-left-color: var(--secondary-color);
+        }
+        
+        .sidebar .nav-link.active {
+            background-color: var(--light-color);
+            border-left-color: var(--secondary-color);
+            color: var(--secondary-color) !important;
+        }
+        
+        .main-content {
+            margin-left: 250px;
+            padding: 20px;
+        }
+        
+        .stat-card {
+            text-align: center;
+            padding: 20px;
+            border-radius: 10px;
+            color: var(--white-text);
+        }
+        
+        .stat-card i {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            color: var(--white-text);
+        }
+        
+        .stat-card .number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--white-text);
+        }
+        
+        .stat-card .label {
+            font-size: 1rem;
+            opacity: 0.9;
+            color: var(--white-text);
+        }
+        
+        .footer {
+            background-color: var(--primary-color);
+            color: var(--white-text);
+            padding: 20px 0;
+            margin-top: 40px;
+            transition: background-color 0.3s;
+        }
+        
+        .club-logo {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 50%;
+            border: 3px solid var(--secondary-color);
+        }
+        
+        .profile-img {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 50%;
+            border: 3px solid var(--secondary-color);
+        }
+        
+        .notification-item {
+            border-left: 4px solid var(--secondary-color);
+            padding-left: 15px;
+            margin-bottom: 15px;
+            background-color: var(--card-bg);
+            padding: 15px;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+            color: var(--text-color);
+        }
+        
+        .event-item {
+            background-color: var(--card-bg);
+            border-left: 4px solid var(--success-color);
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+            color: var(--text-color);
+        }
+        
+        .theme-toggle {
+            background: none;
+            border: none;
+            color: rgba(255,255,255,0.9);
+            cursor: pointer;
+            font-size: 1.2rem;
+            padding: 5px 10px;
+            border-radius: 5px;
+            transition: color 0.3s;
+        }
+        
+        .theme-toggle:hover {
+            color: var(--white-text);
+            background-color: rgba(255,255,255,0.1);
+        }
+        
+        .alert {
+            transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+            color: var(--text-color);
+        }
+        
+        .alert-info {
+            color: #0c5460;
+            background-color: #d1ecf1;
+            border-color: #bee5eb;
+        }
+        
+        .alert-success {
+            color: #155724;
+            background-color: #d4edda;
+            border-color: #c3e6cb;
+        }
+        
+        .alert-warning {
+            color: #856404;
+            background-color: #fff3cd;
+            border-color: #ffeeba;
+        }
+        
+        .alert-danger {
+            color: #721c24;
+            background-color: #f8d7da;
+            border-color: #f5c6cb;
+        }
+        
+        [data-theme="dark"] .alert-info {
+            color: #d1ecf1;
+            background-color: #0c5460;
+            border-color: #bee5eb;
+        }
+        
+        [data-theme="dark"] .alert-success {
+            color: #d4edda;
+            background-color: #155724;
+            border-color: #c3e6cb;
+        }
+        
+        [data-theme="dark"] .alert-warning {
+            color: #fff3cd;
+            background-color: #856404;
+            border-color: #ffeeba;
+        }
+        
+        [data-theme="dark"] .alert-danger {
+            color: #f8d7da;
+            background-color: #721c24;
+            border-color: #f5c6cb;
+        }
+        
+        .table {
+            color: var(--text-color) !important;
+        }
+        
+        .table td, .table th {
+            color: var(--text-color) !important;
+            border-color: var(--border-color) !important;
+        }
+        
+        .table-hover tbody tr:hover {
+            background-color: var(--light-color);
+        }
+        
+        .form-control, .form-select {
+            background-color: var(--card-bg);
+            color: var(--text-color) !important;
+            border-color: var(--border-color);
+            transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+        }
+        
+        .form-control::placeholder {
+            color: var(--text-muted) !important;
+        }
+        
+        .form-control:focus, .form-select:focus {
+            background-color: var(--card-bg);
+            color: var(--text-color) !important;
+            border-color: var(--secondary-color);
+        }
+        
+        .dropdown-menu {
+            background-color: var(--card-bg);
+            border-color: var(--border-color);
+            transition: background-color 0.3s;
+        }
+        
+        .dropdown-item {
+            color: var(--text-color) !important;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        
+        .dropdown-item:hover {
+            background-color: var(--light-color);
+            color: var(--text-color) !important;
+        }
+        
+        .dropdown-divider {
+            border-color: var(--border-color);
+        }
+        
+        .list-group-item {
+            background-color: var(--card-bg);
+            color: var(--text-color);
+            border-color: var(--border-color);
+        }
+        
+        .bg-light {
+            background-color: var(--light-color) !important;
+            color: var(--text-color) !important;
+        }
+        
+        .border {
+            border-color: var(--border-color) !important;
+        }
+        
+        .modal-content {
+            background-color: var(--card-bg);
+            color: var(--text-color);
+        }
+        
+        .modal-header, .modal-footer {
+            border-color: var(--border-color);
+        }
+        
+        .modal-title {
+            color: var(--text-color);
+        }
+        
+        .btn-close {
+            filter: invert(0.5);
+        }
+        
+        [data-theme="dark"] .btn-close {
+            filter: invert(1);
+        }
+        
+        .pagination .page-link {
+            background-color: var(--card-bg);
+            color: var(--text-color);
+            border-color: var(--border-color);
+        }
+        
+        .pagination .page-item.active .page-link {
+            background-color: var(--secondary-color);
+            border-color: var(--secondary-color);
+            color: var(--white-text);
+        }
+        
+        .pagination .page-link:hover {
+            background-color: var(--light-color);
+        }
+        
+        .accordion-item {
+            background-color: var(--card-bg);
+            border-color: var(--border-color);
+        }
+        
+        .accordion-button {
+            background-color: var(--light-color);
+            color: var(--text-color);
+        }
+        
+        .accordion-button:not(.collapsed) {
+            background-color: var(--secondary-color);
+            color: var(--white-text);
+        }
+        
+        .accordion-body {
+            color: var(--text-color);
+        }
+        
+        .nav-tabs .nav-link {
+            color: var(--text-color);
+        }
+        
+        .nav-tabs .nav-link.active {
+            background-color: var(--card-bg);
+            border-color: var(--border-color) var(--border-color) var(--card-bg);
+            color: var(--secondary-color);
+        }
+        
+        .tab-content {
+            color: var(--text-color);
+        }
+        
+        .small, small {
+            color: var(--text-muted) !important;
+        }
+        
+        .lead {
+            color: var(--text-color);
+        }
+        
+        .display-1, .display-2, .display-3, .display-4, .display-5, .display-6,
+        h1, h2, h3, h4, h5, h6 {
+            color: var(--text-color);
+        }
+        
+        .text-white, .navbar-dark .navbar-brand, 
+        .navbar-dark .navbar-nav .nav-link,
+        .card-header {
+            color: var(--white-text) !important;
+        }
+        
+        .navbar-dark .navbar-nav .nav-link {
+            color: rgba(255,255,255,0.9) !important;
+        }
+        
+        .navbar-dark .navbar-nav .nav-link:hover {
+            color: var(--white-text) !important;
+        }
+        
+        .dropdown-menu-dark .dropdown-item {
+            color: var(--text-color) !important;
+        }
+        
+        .footer a {
+            color: var(--white-text) !important;
+        }
+        
+        .navbar-dark .navbar-brand,
+        .navbar-dark .navbar-nav .nav-link,
+        .card-header h1, .card-header h2, .card-header h3,
+        .card-header h4, .card-header h5, .card-header h6,
+        .card-header p, .card-header span, .card-header div,
+        .stat-card * {
+            color: var(--white-text) !important;
+        }
+        
+        .btn i, .btn .fas, .btn .far, .btn .fab {
+            color: inherit !important;
+        }
+        
+        .btn-link {
+            color: var(--secondary-color) !important;
+        }
+        
+        .btn-link:hover {
+            color: var(--secondary-color) !important;
+            text-decoration: underline;
+        }
+        
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                position: static;
+                height: auto;
+            }
+            
+            .main-content {
+                margin-left: 0;
+            }
+            
+            body {
+                padding-top: 60px;
+            }
+        }
+    </style>
+    
+    {% block extra_css %}{% endblock %}
+</head>
+<body data-theme="light">
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="{% url 'home' %}">
+                <img src="{% static 'images/logo3.png' %}" 
+                    alt="Университет Клубтары" 
+                    class="navbar-logo"
+                    style="height: 50px; width: auto;"> 
+            </a>
+                        
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                
+                <ul class="navbar-nav mx-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'home' %}">
+                            <i class="fas fa-home"></i> Басты бет
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'club_list' %}">
+                            <i class="fas fa-users"></i> Клубтар
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'events' %}">
+                            <i class="fas fa-calendar-alt"></i> Іс-шаралар
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'notifications' %}">
+                            <i class="fas fa-bell"></i> Хабарландырулар
+                        </a>
+                    </li>
+                </ul>
+                
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <button class="theme-toggle" id="themeToggle" title="Теманы ауыстыру">
+                            <i class="fas fa-moon" id="themeIcon"></i>
+                        </button>
+                    </li>
+                    
+                    {% if user.is_authenticated %}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-user-circle me-1"></i> {{ user.username }}
+                            {% if user.is_admin %}
+                            <span class="badge bg-danger">Админ</span>
+                            {% elif user.is_leader %}
+                            <span class="badge bg-warning">Лидер</span>
+                            {% endif %}
+                            {% if unread_messages %}
+                            <span class="badge bg-danger">{{ unread_messages }}</span>
+                            {% endif %}
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li>
+                                <a class="dropdown-item" href="{% url 'dashboard' %}">
+                                    <i class="fas fa-tachometer-alt"></i> Дашборд
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="{% url 'profile' %}">
+                                    <i class="fas fa-user"></i> Профиль
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="{% url 'my_clubs' %}">
+                                    <i class="fas fa-star"></i> Менің клубтарым
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="{% url 'inbox' %}">
+                                    <i class="fas fa-envelope"></i> Хабарлар
+                                    {% if unread_messages %}
+                                    <span class="badge bg-danger float-end">{{ unread_messages }}</span>
+                                    {% endif %}
+                                </a>
+                            </li>
+                            {% if user.is_admin %}
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <a class="dropdown-item" href="{% url 'admin_dashboard' %}">
+                                    <i class="fas fa-cogs"></i> Админ панелі
+                                </a>
+                            </li>
+                            {% endif %}
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <a class="dropdown-item" href="{% url 'logout' %}">
+                                    <i class="fas fa-sign-out-alt"></i> Шығу
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'login' %}">
+                            <i class="fas fa-sign-in-alt"></i> Кіру
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'register' %}">
+                            <i class="fas fa-user-plus"></i> Тіркелу
+                        </a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    {% if messages %}
+    <div class="container mt-3">
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+            <i class="fas fa-info-circle me-2"></i>{{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    {% block sidebar %}{% endblock %}
+
+    <main class="{% block main_class %}container mt-4{% endblock %}">
+        {% block content %}{% endblock %}
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        const themeToggle = document.getElementById('themeToggle');
+        const themeIcon = document.getElementById('themeIcon');
+        const body = document.body;
+        
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        body.setAttribute('data-theme', savedTheme);
+        updateThemeIcon(savedTheme);
+        
+        function toggleTheme() {
+            const currentTheme = body.getAttribute('data-theme');
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            
+            body.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            updateThemeIcon(newTheme);
+        }
+        
+        function updateThemeIcon(theme) {
+            if (theme === 'dark') {
+                themeIcon.classList.remove('fa-moon');
+                themeIcon.classList.add('fa-sun');
+                themeToggle.title = 'Светлый режимге ауысу';
+            } else {
+                themeIcon.classList.remove('fa-sun');
+                themeIcon.classList.add('fa-moon');
+                themeToggle.title = 'Темный режимге ауысу';
+            }
+        }
+        
+        themeToggle.addEventListener('click', toggleTheme);
+        
+        function detectSystemTheme() {
+            if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                if (!localStorage.getItem('theme')) {
+                    body.setAttribute('data-theme', 'dark');
+                    localStorage.setItem('theme', 'dark');
+                    updateThemeIcon('dark');
+                }
+            }
+        }
+        
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', detectSystemTheme);
+
+        document.addEventListener('DOMContentLoaded', function() {
+            detectSystemTheme();
+            
+            setTimeout(function() {
+                var alerts = document.querySelectorAll('.alert');
+                alerts.forEach(function(alert) {
+                    var bsAlert = new bootstrap.Alert(alert);
+                    bsAlert.close();
+                });
+            }, 5000);
+            
+            var currentUrl = window.location.pathname;
+            var navLinks = document.querySelectorAll('.sidebar .nav-link');
+            
+            navLinks.forEach(function(link) {
+                if (link.getAttribute('href') === currentUrl) {
+                    link.classList.add('active');
+                }
+            });
+        });
+    </script>
+    
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

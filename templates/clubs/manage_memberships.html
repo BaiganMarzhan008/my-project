@@ -1,0 +1,281 @@
+{% extends 'base.html' %}
+
+{% block title %}Мүшеліктерді Басқару - {{ club.name }}{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1><i class="fas fa-users-cog me-2"></i> Мүшеліктерді Басқару</h1>
+    <a href="{% url 'club_detail' club.pk %}" class="btn btn-primary">
+        <i class="fas fa-arrow-left"></i> Клубқа оралу
+    </a>
+</div>
+
+<div class="row">
+    <div class="col-md-4">
+        <div class="card mb-4">
+            <div class="card-body text-center">
+                <h5>{{ club.name }}</h5>
+                <p class="text-muted">{{ club.get_category_display }}</p>
+                <div class="mb-3">
+                    <i class="fas fa-users fa-3x text-primary"></i>
+                    <h3>{{ club.member_count }}</h3>
+                    <p class="text-muted">Бекітілген мүшелер</p>
+                </div>
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle"></i> Клуб лидері ретінде сіз мүшелік өтініштерді басқара аласыз
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-8">
+        <div class="card mb-4">
+            <div class="card-header bg-warning text-dark">
+                <h5 class="mb-0"><i class="fas fa-clock me-2"></i> Күтілудегі өтініштер ({{ pending_memberships.count }})</h5>
+            </div>
+            <div class="card-body">
+                {% if pending_memberships %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Пайдаланушы</th>
+                                <th>Өтініш берген уақыты</th>
+                                <th>Әрекеттер</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for membership in pending_memberships %}
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        {% if membership.user.profile_image %}
+                                        <img src="{{ membership.user.profile_image.url }}" alt="{{ membership.user.username }}" class="rounded-circle me-3" width="40" height="40">
+                                        {% else %}
+                                        <div class="rounded-circle bg-secondary d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">
+                                            <i class="fas fa-user text-white"></i>
+                                        </div>
+                                        {% endif %}
+                                        <div>
+                                            <strong>{{ membership.user.get_full_name|default:membership.user.username }}</strong>
+                                            <br>
+                                            <small class="text-muted">@{{ membership.user.username }}</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>{{ membership.applied_at|date:"d.m.Y H:i" }}</td>
+                                <td>
+                                    <div class="btn-group btn-group-sm">
+                                        <form method="POST" style="display: inline;">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="membership_id" value="{{ membership.id }}">
+                                            <input type="hidden" name="action" value="approve">
+                                            <button type="submit" class="btn btn-success">
+                                                <i class="fas fa-check"></i> Қабылдау
+                                            </button>
+                                        </form>
+                                        <form method="POST" style="display: inline;">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="membership_id" value="{{ membership.id }}">
+                                            <input type="hidden" name="action" value="reject">
+                                            <button type="submit" class="btn btn-danger">
+                                                <i class="fas fa-times"></i> Қабылдамау
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="text-center py-4">
+                    <i class="fas fa-check-circle fa-4x text-muted mb-3"></i>
+                    <h5>Күтілудегі өтініштер жоқ</h5>
+                    <p class="text-muted">Әзірге ешкім клубқа қосылуға өтініш берген жоқ</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <div class="card mb-4">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0"><i class="fas fa-check-circle me-2"></i> Бекітілген мүшелер ({{ approved_memberships.count }})</h5>
+            </div>
+            <div class="card-body">
+                {% if approved_memberships %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Пайдаланушы</th>
+                                <th>Қосылған күні</th>
+                                <th>Статус</th>
+                                <th>Әрекеттер</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for membership in approved_memberships %}
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        {% if membership.user.profile_image %}
+                                        <img src="{{ membership.user.profile_image.url }}" alt="{{ membership.user.username }}" class="rounded-circle me-3" width="40" height="40">
+                                        {% else %}
+                                        <div class="rounded-circle bg-secondary d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">
+                                            <i class="fas fa-user text-white"></i>
+                                        </div>
+                                        {% endif %}
+                                        <div>
+                                            <strong>{{ membership.user.get_full_name|default:membership.user.username }}</strong>
+                                            <br>
+                                            <small class="text-muted">@{{ membership.user.username }}</small>
+                                            <br>
+                                            <small class="text-muted">{{ membership.user.email }}</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>{{ membership.approved_at|date:"d.m.Y" }}</td>
+                                <td>
+                                    <span class="badge bg-success">{{ membership.get_status_display }}</span>
+                                </td>
+                                <td>
+                                    {% if membership.user != club.leader %}
+                                    <form method="POST" style="display: inline;">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="membership_id" value="{{ membership.id }}">
+                                        <input type="hidden" name="action" value="reject">
+                                        <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Шынымен бұл пайдаланушыны клубтан шығарғыңыз келе ме?')">
+                                            <i class="fas fa-user-minus"></i> Шығару
+                                        </button>
+                                    </form>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="text-center py-4">
+                    <i class="fas fa-users fa-4x text-muted mb-3"></i>
+                    <h5>Бекітілген мүшелер жоқ</h5>
+                    <p class="text-muted">Клубта әлі мүшелер жоқ</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        {% if rejected_memberships %}
+        <div class="card">
+            <div class="card-header bg-danger text-white">
+                <h5 class="mb-0"><i class="fas fa-times-circle me-2"></i> Қабылданбаған өтініштер ({{ rejected_memberships.count }})</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Пайдаланушы</th>
+                                <th>Өтініш берген уақыты</th>
+                                <th>Әрекеттер</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for membership in rejected_memberships %}
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        {% if membership.user.profile_image %}
+                                        <img src="{{ membership.user.profile_image.url }}" alt="{{ membership.user.username }}" class="rounded-circle me-3" width="40" height="40">
+                                        {% else %}
+                                        <div class="rounded-circle bg-secondary d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">
+                                            <i class="fas fa-user text-white"></i>
+                                        </div>
+                                        {% endif %}
+                                        <div>
+                                            <strong>{{ membership.user.get_full_name|default:membership.user.username }}</strong>
+                                            <br>
+                                            <small class="text-muted">@{{ membership.user.username }}</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>{{ membership.applied_at|date:"d.m.Y H:i" }}</td>
+                                <td>
+                                    <form method="POST" style="display: inline;">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="membership_id" value="{{ membership.id }}">
+                                        <input type="hidden" name="action" value="approve">
+                                        <button type="submit" class="btn btn-sm btn-success">
+                                            <i class="fas fa-check"></i> Қайта қарау
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<div class="card mt-4">
+    <div class="card-header">
+        <h5 class="mb-0"><i class="fas fa-graduation-cap me-2"></i> Мүшеліктерді басқару туралы</h5>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-4">
+                <div class="text-center p-3">
+                    <i class="fas fa-check-circle fa-2x text-success mb-3"></i>
+                    <h6>Қабылдау</h6>
+                    <p class="text-muted small">Қабылдаған кезде пайдаланушы клуб мүшесі болады және барлық хабарландыруларды алады</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="text-center p-3">
+                    <i class="fas fa-times-circle fa-2x text-danger mb-3"></i>
+                    <h6>Қабылдамау</h6>
+                    <p class="text-muted small">Қабылдамаған кезде пайдаланушыға хабарландыру жіберіледі және ол қайта өтініш бере алады</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="text-center p-3">
+                    <i class="fas fa-user-minus fa-2x text-warning mb-3"></i>
+                    <h6>Мүшені шығару</h6>
+                    <p class="text-muted small">Мүшені шығарған кезде, ол клубтан алынады бірақ қайта өтініш бере алады</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const approveButtons = document.querySelectorAll('button[value="approve"]');
+        const rejectButtons = document.querySelectorAll('button[value="reject"]');
+        
+        approveButtons.forEach(button => {
+            button.addEventListener('click', function(e) {
+                if (!confirm('Бұл пайдаланушыны клубқа қабылдағыңыз келе ме?')) {
+                    e.preventDefault();
+                }
+            });
+        });
+        
+        rejectButtons.forEach(button => {
+            if (!button.hasAttribute('onclick')) {
+                button.addEventListener('click', function(e) {
+                    if (!confirm('Бұл өтінішті қабылдамағыңыз келе ме?')) {
+                        e.preventDefault();
+                    }
+                });
+            }
+        });
+    });
+</script>
+{% endblock %}

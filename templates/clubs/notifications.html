@@ -1,0 +1,163 @@
+{% extends 'base.html' %}
+
+{% block title %}Хабарландырулар - Университет Клубтары{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1><i class="fas fa-bell me-2"></i> Хабарландырулар</h1>
+    {% if user.is_authenticated %}
+    <a href="{% url 'create_notification' %}" class="btn btn-primary">
+        <i class="fas fa-plus-circle"></i> Жаңа хабарландыру
+    </a>
+    {% endif %}
+</div>
+
+<div class="card mb-4">
+    <div class="card-body">
+        <div class="row g-3">
+            <div class="col-md-6">
+                <div class="input-group">
+                    <span class="input-group-text"><i class="fas fa-search"></i></span>
+                    <input type="text" class="form-control" placeholder="Хабарландыруларды іздеу..." id="searchInput">
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="btn-group w-100" role="group">
+                    <button type="button" class="btn btn-outline-primary active" data-filter="all">Барлығы</button>
+                    <button type="button" class="btn btn-outline-success" data-filter="important">Маңызды</button>
+                    <button type="button" class="btn btn-outline-info" data-filter="announcement">Хабарландыру</button>
+                    <button type="button" class="btn btn-outline-warning" data-filter="event">Іс-шара</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h5 class="mb-0">Барлық хабарландырулар</h5>
+    </div>
+    <div class="card-body">
+        {% if notifications %}
+        <div id="notificationsList">
+            {% for notification in notifications %}
+            <div class="notification-item mb-4" data-type="{{ notification.notification_type }}">
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                    <h5>{{ notification.title }}</h5>
+                    <span class="badge {% if notification.notification_type == 'important' %}bg-danger{% elif notification.notification_type == 'announcement' %}bg-info{% else %}bg-warning{% endif %}">
+                        {{ notification.get_notification_type_display }}
+                    </span>
+                </div>
+                
+                <p class="text-muted mb-2">
+                    <i class="fas fa-clock"></i> {{ notification.created_at|date:"d.m.Y H:i" }}
+                    <i class="fas fa-user ms-3"></i> {{ notification.created_by.username }}
+                    {% if notification.club %}
+                    <i class="fas fa-users ms-3"></i> {{ notification.club.name }}
+                    {% endif %}
+                </p>
+                
+                <p class="mb-3">{{ notification.content|linebreaks }}</p>
+                
+                {% if notification.club %}
+                <div class="d-flex justify-content-between align-items-center">
+                    <small class="text-muted">
+                        <i class="fas fa-info-circle"></i> Бұл хабарландыру тек {{ notification.club.name }} клубына қатысты
+                    </small>
+                    <a href="{% url 'club_detail' notification.club.pk %}" class="btn btn-sm btn-outline-primary">
+                        Клубты көру
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+        
+        {% if notifications.has_other_pages %}
+        <nav aria-label="Хабарландырулар парағы" class="mt-4">
+            <ul class="pagination justify-content-center">
+                {% if notifications.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ notifications.previous_page_number }}">Алдыңғы</a>
+                </li>
+                {% endif %}
+                
+                {% for num in notifications.paginator.page_range %}
+                    {% if notifications.number == num %}
+                    <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+                    {% elif num > notifications.number|add:'-3' and num < notifications.number|add:'3' %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                    </li>
+                    {% endif %}
+                {% endfor %}
+                
+                {% if notifications.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ notifications.next_page_number }}">Келесі</a>
+                </li>
+                {% endif %}
+            </ul>
+        </nav>
+        {% endif %}
+        
+        {% else %}
+        <div class="text-center py-5">
+            <i class="fas fa-bell fa-4x text-muted mb-3"></i>
+            <h4>Хабарландырулар жоқ</h4>
+            <p class="text-muted">Жаңа хабарландырулар болған кезде олар осында пайда болады</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<div class="alert alert-info mt-4">
+    <h5><i class="fas fa-info-circle me-2"></i> Хабарландырулар туралы</h5>
+    <ul class="mb-0">
+        <li>Хабарландырулар клуб лидерлері немесе админдер жасайды</li>
+        <li>Клуб мүшелері өз клубтарының хабарландыруларын көреді</li>
+        <li>Жалпы хабарландырулар барлық пайдаланушыларға арналған</li>
+        <li>Маңызды хабарландырулар ерекше түспен белгіленеді</li>
+    </ul>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const filterButtons = document.querySelectorAll('[data-filter]');
+        const notifications = document.querySelectorAll('.notification-item');
+        const searchInput = document.getElementById('searchInput');
+        
+        filterButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                filterButtons.forEach(btn => btn.classList.remove('active'));
+                this.classList.add('active');
+                
+                const filterType = this.getAttribute('data-filter');
+                
+                notifications.forEach(notification => {
+                    if (filterType === 'all' || notification.getAttribute('data-type') === filterType) {
+                        notification.style.display = 'block';
+                    } else {
+                        notification.style.display = 'none';
+                    }
+                });
+            });
+        });
+        
+        searchInput.addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase();
+            
+            notifications.forEach(notification => {
+                const title = notification.querySelector('h5').textContent.toLowerCase();
+                const content = notification.querySelector('p.mb-3').textContent.toLowerCase();
+                
+                if (title.includes(searchTerm) || content.includes(searchTerm)) {
+                    notification.style.display = 'block';
+                } else {
+                    notification.style.display = 'none';
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,67 @@
+{% extends 'admin/base.html' %}
+
+{% block title %}Жоюды Растау - Админ Панелі{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header bg-danger text-white">
+                <h4 class="mb-0"><i class="fas fa-exclamation-triangle me-2"></i> Жоюды растау</h4>
+            </div>
+            <div class="card-body text-center">
+                <i class="fas fa-trash-alt fa-5x text-danger mb-4"></i>
+                <h4>Сіз шынымен жойғыңыз келе ме?</h4>
+                <p class="lead">
+                    <strong>{{ object.get_full_name|default:object.username }}</strong> {{ object_name }} жойылады
+                </p>
+                <p class="text-muted">
+                    Бұл әрекетті қайтару мүмкін емес
+                </p>
+            </div>
+            <div class="card-footer">
+                <form method="POST">
+                    {% csrf_token %}
+                    <div class="d-flex justify-content-between">
+                        <a href="{% url 'user_management' %}" class="btn btn-secondary">
+                            <i class="fas fa-times"></i> Болдырмау
+                        </a>
+                        <button type="submit" class="btn btn-danger">
+                            <i class="fas fa-trash"></i> Иә, жою
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <div class="card mt-4">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i> Пайдаланушы туралы</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><strong>Пайдаланушы аты:</strong> {{ object.username }}</p>
+                        <p><strong>Толық аты:</strong> {{ object.get_full_name|default:"Көрсетілмеген" }}</p>
+                        <p><strong>Электрондық пошта:</strong> {{ object.email }}</p>
+                        <p><strong>Рөлі:</strong> {{ object.get_role_display }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>Статус:</strong> 
+                            {% if object.is_active %}
+                            <span class="badge bg-success">Белсенді</span>
+                            {% else %}
+                            <span class="badge bg-danger">Белсенді емес</span>
+                            {% endif %}
+                        </p>
+                        {% if object.student_id %}
+                        <p><strong>Студенттік номер:</strong> {{ object.student_id }}</p>
+                        {% endif %}
+                        <p><strong>Тіркелген күні:</strong> {{ object.date_joined|date:"d.m.Y" }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

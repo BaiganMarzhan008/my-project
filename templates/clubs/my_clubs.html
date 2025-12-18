@@ -1,0 +1,214 @@
+{% extends 'base.html' %}
+
+{% block title %}Менің Клубтарым - Университет Клубтары{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1><i class="fas fa-star me-2"></i> Менің Клубтарым</h1>
+    <a href="{% url 'club_list' %}" class="btn btn-primary">
+        <i class="fas fa-search"></i> Жаңа клубтарды іздеу
+    </a>
+</div>
+
+{% if led_clubs %}
+<div class="card mb-4">
+    <div class="card-header bg-warning text-dark">
+        <h5 class="mb-0"><i class="fas fa-crown me-2"></i> Мен басқаратын клубтар</h5>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            {% for club in led_clubs %}
+            <div class="col-md-6 col-lg-4 mb-3">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center mb-3">
+                            {% if club.logo %}
+                            <img src="{{ club.logo.url }}" alt="{{ club.name }}" class="rounded-circle me-3" width="60" height="60">
+                            {% else %}
+                            <div class="rounded-circle bg-secondary d-flex align-items-center justify-content-center me-3" style="width: 60px; height: 60px;">
+                                <i class="fas fa-users text-white"></i>
+                            </div>
+                            {% endif %}
+                            <div>
+                                <h5 class="mb-0">{{ club.name }}</h5>
+                                <small class="text-muted">{{ club.member_count }} мүше</small>
+                            </div>
+                        </div>
+                        
+                        <p class="card-text text-muted">{{ club.description|truncatechars:100 }}</p>
+                        
+                        <div class="d-grid gap-2">
+                            <a href="{% url 'club_detail' club.pk %}" class="btn btn-outline-primary btn-sm">
+                                <i class="fas fa-eye"></i> Көру
+                            </a>
+                            <a href="{% url 'manage_memberships' club.pk %}" class="btn btn-outline-warning btn-sm">
+                                <i class="fas fa-cog"></i> Басқару
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<div class="card mb-4">
+    <div class="card-header bg-success text-white">
+        <h5 class="mb-0"><i class="fas fa-check-circle me-2"></i> Мен мүше болған клубтар</h5>
+    </div>
+    <div class="card-body">
+        {% if memberships %}
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Клуб</th>
+                        <th>Санат</th>
+                        <th>Мүшелер</th>
+                        <th>Қосылған күні</th>
+                        <th>Әрекеттер</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for membership in memberships %}
+                    <tr>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                {% if membership.club.logo %}
+                                <img src="{{ membership.club.logo.url }}" alt="{{ membership.club.name }}" class="rounded-circle me-3" width="40" height="40">
+                                {% else %}
+                                <div class="rounded-circle bg-secondary d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">
+                                    <i class="fas fa-users text-white"></i>
+                                </div>
+                                {% endif %}
+                                <div>
+                                    <strong>{{ membership.club.name }}</strong>
+                                    <br>
+                                    <small class="text-muted">{{ membership.club.description|truncatechars:50 }}</small>
+                                </div>
+                            </div>
+                        </td>
+                        <td>{{ membership.club.get_category_display }}</td>
+                        <td>{{ membership.club.member_count }}</td>
+                        <td>{{ membership.approved_at|date:"d.m.Y"|default:"-" }}</td>
+                        <td>
+                            <div class="btn-group btn-group-sm">
+                                <a href="{% url 'club_detail' membership.club.pk %}" class="btn btn-outline-primary">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                                <a href="#" class="btn btn-outline-danger">
+                                    <i class="fas fa-sign-out-alt"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="text-center py-5">
+            <i class="fas fa-users fa-4x text-muted mb-3"></i>
+            <h4>Сіз әлі клубтардың мүшесі емессіз</h4>
+            <p class="text-muted">Клубтарға қосылып, мүшелік артықшылықтарынан пайдаланыңыз</p>
+            <a href="{% url 'club_list' %}" class="btn btn-primary">
+                <i class="fas fa-search"></i> Клубтарды іздеу
+            </a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+{% if pending_applications %}
+<div class="card">
+    <div class="card-header bg-info text-white">
+        <h5 class="mb-0"><i class="fas fa-clock me-2"></i> Күтілудегі өтініштер</h5>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Клуб</th>
+                        <th>Өтініш берген күні</th>
+                        <th>Статус</th>
+                        <th>Әрекеттер</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for application in pending_applications %}
+                    <tr>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                {% if application.club.logo %}
+                                <img src="{{ application.club.logo.url }}" alt="{{ application.club.name }}" class="rounded-circle me-3" width="40" height="40">
+                                {% else %}
+                                <div class="rounded-circle bg-secondary d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">
+                                    <i class="fas fa-users text-white"></i>
+                                </div>
+                                {% endif %}
+                                <div>
+                                    <strong>{{ application.club.name }}</strong>
+                                    <br>
+                                    <small class="text-muted">{{ application.club.get_category_display }}</small>
+                                </div>
+                            </div>
+                        </td>
+                        <td>{{ application.applied_at|date:"d.m.Y H:i" }}</td>
+                        <td>
+                            <span class="badge bg-warning">{{ application.get_status_display }}</span>
+                        </td>
+                        <td>
+                            <a href="{% url 'club_detail' application.club.pk %}" class="btn btn-sm btn-outline-primary">
+                                <i class="fas fa-eye"></i> Көру
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<div class="card mt-4">
+    <div class="card-header">
+        <h5 class="mb-0"><i class="fas fa-lightbulb me-2"></i> Ұсыныстар</h5>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-4">
+                <div class="text-center p-3">
+                    <i class="fas fa-users fa-3x text-primary mb-3"></i>
+                    <h5>Клубтарды зерттеңіз</h5>
+                    <p class="text-muted">Өзіңізді қызықтыратын клубтарды табыңыз</p>
+                    <a href="{% url 'club_list' %}" class="btn btn-outline-primary">Клубтарды іздеу</a>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="text-center p-3">
+                    <i class="fas fa-calendar-alt fa-3x text-success mb-3"></i>
+                    <h5>Іс-шараларға қатысыңыз</h5>
+                    <p class="text-muted">Клубтардың іс-шараларына қатысып, жаңа адамдармен танысыңыз</p>
+                    <a href="{% url 'events' %}" class="btn btn-outline-success">Іс-шаралар</a>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="text-center p-3">
+                    <i class="fas fa-plus-circle fa-3x text-warning mb-3"></i>
+                    <h5>Өз клубыңызды бастаңыз</h5>
+                    <p class="text-muted">Егер қызығушылықтарыңызға сәйкес клуб жоқ болса, өзіңіз бастаңыз</p>
+                    {% if user.is_admin %}
+                    <a href="{% url 'club_create' %}" class="btn btn-outline-warning">Клуб құру</a>
+                    {% else %}
+                    <button class="btn btn-outline-warning" disabled>Админге хабарласыңыз</button>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

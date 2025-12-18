@@ -1,0 +1,183 @@
+{% extends 'admin/base.html' %}
+{% load static %}
+
+{% block title %}Админ Дашборды - Университет Клубтары{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1><i class="fas fa-tachometer-alt me-2"></i> Админ Дашборды</h1>
+    <div class="btn-group">
+        <a href="{% url 'create_user' %}" class="btn btn-primary">
+            <i class="fas fa-user-plus"></i> Жаңа пайдаланушы
+        </a>
+        <a href="{% url 'club_create' %}" class="btn btn-success">
+            <i class="fas fa-plus-circle"></i> Жаңа клуб
+        </a>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="stat-card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+            <i class="fas fa-users"></i>
+            <div class="number">{{ total_users }}</div>
+            <div class="label">Пайдаланушылар</div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+            <i class="fas fa-flag"></i>
+            <div class="number">{{ total_clubs }}</div>
+            <div class="label">Клубтар</div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+            <i class="fas fa-user-clock"></i>
+            <div class="number">{{ pending_memberships }}</div>
+            <div class="label">Күтілудегі өтініштер</div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);">
+            <i class="fas fa-bell"></i>
+            <div class="number">{{ active_notifications }}</div>
+            <div class="label">Белсенді хабарландырулар</div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-user-clock me-2"></i> Соңғы тіркелгендер</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Пайдаланушы</th>
+                                <th>Рөл</th>
+                                <th>Тіркелген күні</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for user in recent_users %}
+                            <tr>
+                                <td>
+                                    <a href="{% url 'user_detail' user.id %}">{{ user.username }}</a>
+                                    <br><small class="text-muted">{{ user.email }}</small>
+                                </td>
+                                <td>
+                                    <span class="badge {% if user.is_admin %}bg-danger{% else %}bg-primary{% endif %}">
+                                        {{ user.get_role_display }}
+                                    </span>
+                                </td>
+                                <td>{{ user.date_joined|date:"d.m.Y" }}</td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="3" class="text-center">Пайдаланушылар жоқ</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <a href="{% url 'user_management' %}" class="btn btn-outline-primary btn-sm">
+                    Барлығын көру <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-plus-circle me-2"></i> Соңғы құрылған клубтар</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Клуб аты</th>
+                                <th>Санат</th>
+                                <th>Мүшелер</th>
+                                <th>Статус</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for club in recent_clubs %}
+                            <tr>
+                                <td>
+                                    <a href="{% url 'club_detail' club.pk %}">{{ club.name }}</a>
+                                    {% if club.leader %}
+                                    <br><small class="text-muted">Лидер: {{ club.leader.username }}</small>
+                                    {% endif %}
+                                </td>
+                                <td>{{ club.get_category_display }}</td>
+                                <td>{{ club.member_count }}</td>
+                                <td>
+                                    {% if club.is_active %}
+                                    <span class="badge bg-success">Белсенді</span>
+                                    {% else %}
+                                    <span class="badge bg-danger">Белсенді емес</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="4" class="text-center">Клубтар жоқ</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <a href="{% url 'club_list' %}" class="btn btn-outline-primary btn-sm">
+                    Барлығын көру <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-bolt me-2"></i> Жылдам әрекеттер</h5>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-3 col-6">
+                        <a href="{% url 'create_user' %}" class="btn btn-outline-primary w-100">
+                            <i class="fas fa-user-plus fa-2x mb-2"></i><br>
+                            Пайдаланушы қосу
+                        </a>
+                    </div>
+                    <div class="col-md-3 col-6">
+                        <a href="{% url 'club_create' %}" class="btn btn-outline-success w-100">
+                            <i class="fas fa-plus-circle fa-2x mb-2"></i><br>
+                            Клуб құру
+                        </a>
+                    </div>
+                    <div class="col-md-3 col-6">
+                        <a href="{% url 'create_notification' %}" class="btn btn-outline-warning w-100">
+                            <i class="fas fa-bullhorn fa-2x mb-2"></i><br>
+                            Хабарландыру
+                        </a>
+                    </div>
+                    <div class="col-md-3 col-6">
+                        <a href="{% url 'admin_statistics' %}" class="btn btn-outline-info w-100">
+                            <i class="fas fa-chart-bar fa-2x mb-2"></i><br>
+                            Статистика
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

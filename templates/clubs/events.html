@@ -1,0 +1,111 @@
+{% extends 'base.html' %}
+
+{% block title %}Іс-шаралар - Университет Клубтары{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1><i class="fas fa-calendar-alt me-2"></i> Іс-шаралар</h1>
+    {% if user.is_authenticated %}
+    <a href="{% url 'create_event' %}" class="btn btn-primary">
+        <i class="fas fa-plus-circle"></i> Жаңа іс-шара
+    </a>
+    {% endif %}
+</div>
+
+<div class="card mb-4">
+    <div class="card-header bg-success text-white">
+        <h5 class="mb-0"><i class="fas fa-calendar-check me-2"></i> Жуықтағы іс-шаралар</h5>
+    </div>
+    <div class="card-body">
+        {% if upcoming_events %}
+        <div class="row">
+            {% for event in upcoming_events %}
+            <div class="col-md-6 mb-3">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <h5 class="card-title">{{ event.title }}</h5>
+                            <span class="badge bg-primary">{{ event.club.name }}</span>
+                        </div>
+                        
+                        <p class="card-text">{{ event.description|truncatechars:150 }}</p>
+                        
+                        <div class="mb-3">
+                            <p class="mb-1"><i class="fas fa-map-marker-alt"></i> {{ event.location }}</p>
+                            <p class="mb-1"><i class="fas fa-calendar"></i> {{ event.date|date:"d.m.Y H:i" }}</p>
+                            <p class="mb-0"><i class="fas fa-users"></i> {{ event.attendee_count }} қатысушы</p>
+                        </div>
+                        
+                        <div class="d-flex justify-content-between">
+                            <a href="{% url 'club_detail' event.club.pk %}" class="btn btn-sm btn-outline-primary">
+                                Клубты көру
+                            </a>
+                            <button class="btn btn-sm btn-success">
+                                <i class="fas fa-check"></i> Қатысу
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="text-center py-4">
+            <i class="fas fa-calendar fa-4x text-muted mb-3"></i>
+            <h4>Жуықтағы іс-шаралар жоқ</h4>
+            <p class="text-muted">Клубтар жақын арада іс-шаралар ұйымдастырған кезде олар осында пайда болады</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+{% if past_events %}
+<div class="card">
+    <div class="card-header bg-secondary text-white">
+        <h5 class="mb-0"><i class="fas fa-history me-2"></i> Өткен іс-шаралар</h5>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Іс-шара</th>
+                        <th>Клуб</th>
+                        <th>Күні</th>
+                        <th>Орын</th>
+                        <th>Қатысушылар</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for event in past_events %}
+                    <tr>
+                        <td>
+                            <strong>{{ event.title }}</strong>
+                            <br>
+                            <small class="text-muted">{{ event.description|truncatechars:50 }}</small>
+                        </td>
+                        <td>{{ event.club.name }}</td>
+                        <td>{{ event.date|date:"d.m.Y H:i" }}</td>
+                        <td>{{ event.location }}</td>
+                        <td>{{ event.attendee_count }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<div class="card mt-4">
+    <div class="card-header">
+        <h5 class="mb-0"><i class="fas fa-calendar-day me-2"></i> Іс-шаралар күнтізбесі</h5>
+    </div>
+    <div class="card-body">
+        <div class="text-center">
+            <p class="lead">Болашақта біз мұнда іс-шаралар күнтізбесін көрсетеміз</p>
+            <p class="text-muted">Әзірлеу жүріп жатыр...</p>
+        </div>
+    </div>
+</div>
+{% endblock %}

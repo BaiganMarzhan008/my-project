@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Іс-шара Құру - Университет Клубтары{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header bg-success text-white">
+                <h4 class="mb-0"><i class="fas fa-calendar-plus me-2"></i> Іс-шара Құру</h4>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    {% csrf_token %}
+                    
+                    <div class="mb-3">
+                        {{ form.title|as_crispy_field }}
+                    </div>
+                    
+                    <div class="mb-3">
+                        {{ form.description|as_crispy_field }}
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            {{ form.club|as_crispy_field }}
+                        </div>
+                        <div class="col-md-6">
+                            {{ form.location|as_crispy_field }}
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        {{ form.date|as_crispy_field }}
+                    </div>
+                    
+                    <div class="d-grid gap-2 mt-4">
+                        <button type="submit" class="btn btn-success">
+                            <i class="fas fa-save"></i> Іс-шараны сақтау
+                        </button>
+                        <a href="{% if club %}{% url 'club_detail' club.pk %}{% else %}{% url 'events' %}{% endif %}" class="btn btn-secondary">
+                            <i class="fas fa-times"></i> Болдырмау
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <div class="card mt-4">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i> Іс-шаралар туралы ақпарат</h5>
+            </div>
+            <div class="card-body">
+                <ul class="mb-0">
+                    <li>Іс-шаралар тек сіз мүше болған клубтар үшін құрылады</li>
+                    <li>Админ барлық клубтар үшін іс-шаралар құра алады</li>
+                    <li>Клуб лидері өз клубы үшін іс-шаралар құра алады</li>
+                    <li>Іс-шара құрылғаннан кейін, барлық клуб мүшелері хабарланады</li>
+                    <li>Іс-шаралар тізімінде тек жуықтағы іс-шаралар көрсетіледі</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

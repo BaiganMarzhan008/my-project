@@ -1,0 +1,101 @@
+{% extends 'base.html' %}
+
+{% block title %}Хабар - {{ message.subject }}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h4 class="mb-0"><i class="fas fa-envelope me-2"></i> {{ message.subject }}</h4>
+                    <div>
+                        {% if message.sender == user %}
+                        <span class="badge bg-success">Жіберілген</span>
+                        {% else %}
+                        <span class="badge bg-info">Алынған</span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="mb-4 p-3 bg-light rounded">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p><strong><i class="fas fa-user me-2"></i> Жіберуші:</strong><br>
+                            {{ message.sender.get_full_name|default:message.sender.username }} ({{ message.sender.email }})</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong><i class="fas fa-user me-2"></i> Қабылдаушы:</strong><br>
+                            {{ message.receiver.get_full_name|default:message.receiver.username }} ({{ message.receiver.email }})</p>
+                        </div>
+                    </div>
+                    <p class="mb-0"><strong><i class="fas fa-clock me-2"></i> Жіберілген уақыты:</strong> {{ message.sent_at|date:"d.m.Y H:i" }}</p>
+                </div>
+                
+                <div class="mb-4">
+                    <h5>Хабар мазмұны:</h5>
+                    <div class="p-3 border rounded bg-white">
+                        {{ message.content|linebreaks }}
+                    </div>
+                </div>
+                
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <a href="{% url 'inbox' %}" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left"></i> Хабарлар тізіміне оралу
+                        </a>
+                        {% if message.sender != user %}
+                        <a href="{% url 'send_message' %}?reply_to={{ message.sender.id }}" class="btn btn-primary ms-2">
+                            <i class="fas fa-reply"></i> Жауап беру
+                        </a>
+                        {% endif %}
+                    </div>
+                    <div>
+                        {% if message.sender == user %}
+                        <button class="btn btn-outline-danger" onclick="confirmDelete()">
+                            <i class="fas fa-trash"></i> Жою
+                        </button>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card mt-4">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-user me-2"></i> Жіберуші туралы</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-8">
+                        <h6>{{ message.sender.get_full_name|default:message.sender.username }}</h6>
+                        <p class="mb-1"><i class="fas fa-envelope"></i> {{ message.sender.email }}</p>
+                        {% if message.sender.student_id %}
+                        <p class="mb-1"><i class="fas fa-id-card"></i> {{ message.sender.student_id }}</p>
+                        {% endif %}
+                        <p class="mb-0">
+                            <span class="badge {% if message.sender.is_admin %}bg-danger{% elif message.sender.is_leader %}bg-warning{% else %}bg-primary{% endif %}">
+                                {{ message.sender.get_role_display }}
+                            </span>
+                        </p>
+                    </div>
+                    <div class="col-md-4 text-end">
+                        <a href="{% url 'send_message' %}?receiver={{ message.sender.id }}" class="btn btn-primary">
+                            <i class="fas fa-envelope"></i> Хабар жіберу
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function confirmDelete() {
+        if (confirm('Сіз шынымен бұл хабарды жойғыңыз келе ме? Бұл әрекетті қайтару мүмкін емес.')) {
+            alert('Жою функциясы әзірлеу жүріп жатыр');
+        }
+    }
+</script>
+{% endblock %}

@@ -1,0 +1,230 @@
+{% extends 'base.html' %}
+
+{% block title %}Дашборд - {{ user.username }}{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1><i class="fas fa-tachometer-alt me-2"></i> Менің Дашбордым</h1>
+    <div class="btn-group">
+        <a href="{% url 'my_clubs' %}" class="btn btn-primary">
+            <i class="fas fa-users"></i> Менің клубтарым
+        </a>
+        <a href="{% url 'profile' %}" class="btn btn-outline-primary">
+            <i class="fas fa-user"></i> Профиль
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-3">
+        <div class="card text-center">
+            <div class="card-body">
+                <i class="fas fa-users fa-3x text-primary mb-3"></i>
+                <h3>{{ user_memberships.count }}</h3>
+                <p class="text-muted mb-0">Клуб мүшесі</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card text-center">
+            <div class="card-body">
+                <i class="fas fa-clock fa-3x text-warning mb-3"></i>
+                <h3>{{ pending_applications.count }}</h3>
+                <p class="text-muted mb-0">Күтілудегі өтініштер</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card text-center">
+            <div class="card-body">
+                <i class="fas fa-envelope fa-3x text-success mb-3"></i>
+                <h3>{{ unread_messages }}</h3>
+                <p class="text-muted mb-0">Оқылмаған хабарлар</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card text-center">
+            <div class="card-body">
+                <i class="fas fa-calendar-alt fa-3x text-info mb-3"></i>
+                <h3>{{ upcoming_events_count|default:"0" }}</h3>
+                <p class="text-muted mb-0">Жуықтағы іс-шаралар</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-users me-2"></i> Менің клубтарым</h5>
+            </div>
+            <div class="card-body">
+                {% if user_memberships %}
+                    <div class="list-group">
+                        {% for membership in user_memberships|slice:":5" %}
+                        <a href="{% url 'club_detail' membership.club.pk %}" class="list-group-item list-group-item-action">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1">{{ membership.club.name }}</h6>
+                                <small class="text-muted">{{ membership.club.member_count }} мүше</small>
+                            </div>
+                            <p class="mb-1 text-muted">{{ membership.club.description|truncatechars:80 }}</p>
+                            <small>{{ membership.club.get_category_display }}</small>
+                        </a>
+                        {% endfor %}
+                    </div>
+                    <div class="mt-3 text-center">
+                        <a href="{% url 'my_clubs' %}" class="btn btn-outline-primary btn-sm">
+                            Барлық клубтарды көру <i class="fas fa-arrow-right"></i>
+                        </a>
+                    </div>
+                {% else %}
+                    <div class="text-center py-4">
+                        <i class="fas fa-users fa-4x text-muted mb-3"></i>
+                        <h5>Сіз әлі клубтардың мүшесі емессіз</h5>
+                        <p class="text-muted">Клубтарға қосылып, мүшелік артықшылықтарынан пайдаланыңыз</p>
+                        <a href="{% url 'club_list' %}" class="btn btn-primary">
+                            <i class="fas fa-search"></i> Клубтарды іздеу
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-calendar-alt me-2"></i> Жуықтағы іс-шаралар</h5>
+            </div>
+            <div class="card-body">
+                {% if upcoming_events %}
+                    <div class="list-group">
+                        {% for event in upcoming_events|slice:":5" %}
+                        <div class="list-group-item">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1">{{ event.title }}</h6>
+                                <small class="text-muted">{{ event.date|date:"d.m.Y H:i" }}</small>
+                            </div>
+                            <p class="mb-1">{{ event.club.name }}</p>
+                            <small class="text-muted">
+                                <i class="fas fa-map-marker-alt"></i> {{ event.location }}
+                            </small>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    <div class="mt-3 text-center">
+                        <a href="{% url 'events' %}" class="btn btn-outline-primary btn-sm">
+                            Барлық іс-шараларды көру <i class="fas fa-arrow-right"></i>
+                        </a>
+                    </div>
+                {% else %}
+                    <div class="text-center py-4">
+                        <i class="fas fa-calendar fa-4x text-muted mb-3"></i>
+                        <h5>Жуықтағы іс-шаралар жоқ</h5>
+                        <p class="text-muted">Клубтар жақын арада іс-шаралар ұйымдастырған кезде олар осында пайда болады</p>
+                        <a href="{% url 'events' %}" class="btn btn-outline-primary">
+                            <i class="fas fa-calendar"></i> Іс-шаралар күнтізбесі
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-bell me-2"></i> Соңғы хабарландырулар</h5>
+            </div>
+            <div class="card-body">
+                {% if recent_notifications %}
+                    <div class="list-group">
+                        {% for notification in recent_notifications %}
+                        <div class="list-group-item">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1">{{ notification.title }}</h6>
+                                <small class="text-muted">{{ notification.created_at|timesince }} бұрын</small>
+                            </div>
+                            <p class="mb-1 text-muted">{{ notification.content|truncatechars:80 }}</p>
+                            {% if notification.club %}
+                            <small><i class="fas fa-users"></i> {{ notification.club.name }}</small>
+                            {% endif %}
+                        </div>
+                        {% endfor %}
+                    </div>
+                    <div class="mt-3 text-center">
+                        <a href="{% url 'notifications' %}" class="btn btn-outline-primary btn-sm">
+                            Барлық хабарландыруларды көру <i class="fas fa-arrow-right"></i>
+                        </a>
+                    </div>
+                {% else %}
+                    <div class="text-center py-4">
+                        <i class="fas fa-bell fa-4x text-muted mb-3"></i>
+                        <h5>Хабарландырулар жоқ</h5>
+                        <p class="text-muted">Жаңа хабарландырулар болған кезде олар осында пайда болады</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-bolt me-2"></i> Жылдам әрекеттер</h5>
+            </div>
+            <div class="card-body">
+                <div class="row g-2">
+                    <div class="col-md-6">
+                        <a href="{% url 'club_list' %}" class="btn btn-outline-primary w-100 mb-2">
+                            <i class="fas fa-search me-2"></i> Клубтарды іздеу
+                        </a>
+                    </div>
+                    <div class="col-md-6">
+                        <a href="{% url 'events' %}" class="btn btn-outline-success w-100 mb-2">
+                            <i class="fas fa-calendar me-2"></i> Іс-шаралар
+                        </a>
+                    </div>
+                    <div class="col-md-6">
+                        <a href="{% url 'send_message' %}" class="btn btn-outline-info w-100 mb-2">
+                            <i class="fas fa-envelope me-2"></i> Хабар жіберу
+                        </a>
+                    </div>
+                    <div class="col-md-6">
+                        <a href="{% url 'inbox' %}" class="btn btn-outline-warning w-100 mb-2">
+                            <i class="fas fa-inbox me-2"></i> Хабарлар
+                            {% if unread_messages %}
+                            <span class="badge bg-danger">{{ unread_messages }}</span>
+                            {% endif %}
+                        </a>
+                    </div>
+                </div>
+                
+                {% if user.is_leader %}
+                <hr>
+                <h6>Лидер ретінде:</h6>
+                <div class="row g-2">
+                    <div class="col-md-6">
+                        <a href="{% url 'create_notification' %}" class="btn btn-outline-danger w-100 mb-2">
+                            <i class="fas fa-bullhorn me-2"></i> Хабарландыру
+                        </a>
+                    </div>
+                    <div class="col-md-6">
+                        <a href="{% url 'create_event' %}" class="btn btn-outline-dark w-100 mb-2">
+                            <i class="fas fa-calendar-plus me-2"></i> Іс-шара құру
+                        </a>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

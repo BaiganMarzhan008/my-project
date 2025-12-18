@@ -1,0 +1,183 @@
+{% extends 'base.html' %}
+
+{% block title %}Хабарлар - Университет Клубтары{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0"><i class="fas fa-inbox me-2"></i> Хабарлар</h5>
+            </div>
+            <div class="card-body p-0">
+                <div class="list-group list-group-flush">
+                    <a href="#received" class="list-group-item list-group-item-action active" data-bs-toggle="list">
+                        <i class="fas fa-envelope me-2"></i> Алынған хабарлар
+                        {% if unread_messages %}
+                        <span class="badge bg-danger float-end">{{ unread_messages }}</span>
+                        {% endif %}
+                    </a>
+                    <a href="#sent" class="list-group-item list-group-item-action" data-bs-toggle="list">
+                        <i class="fas fa-paper-plane me-2"></i> Жіберілген хабарлар
+                    </a>
+                </div>
+            </div>
+            <div class="card-footer">
+                <a href="{% url 'send_message' %}" class="btn btn-success w-100">
+                    <i class="fas fa-plus-circle"></i> Жаңа хабар
+                </a>
+            </div>
+        </div>
+        
+        <div class="card mt-3">
+            <div class="card-header">
+                <h6 class="mb-0"><i class="fas fa-users me-2"></i> Жылдам байланыс</h6>
+            </div>
+            <div class="card-body">
+                <div class="list-group">
+                    {% for club in user_clubs|slice:":3" %}
+                    <a href="{% url 'club_detail' club.pk %}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-users"></i> {{ club.name }}
+                    </a>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-8">
+        <div class="tab-content">
+            <div class="tab-pane fade show active" id="received">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="fas fa-envelope me-2"></i> Алынған хабарлар</h5>
+                    </div>
+                    <div class="card-body p-0">
+                        {% if received_messages %}
+                        <div class="list-group list-group-flush">
+                            {% for message in received_messages %}
+                            <a href="{% url 'message_detail' message.id %}" class="list-group-item list-group-item-action {% if not message.is_read %}bg-light{% endif %}">
+                                <div class="d-flex w-100 justify-content-between">
+                                    <div>
+                                        <strong>{{ message.sender.get_full_name|default:message.sender.username }}</strong>
+                                        <br>
+                                        <small class="text-muted">{{ message.subject }}</small>
+                                    </div>
+                                    <div class="text-end">
+                                        <small class="text-muted">{{ message.sent_at|date:"d.m.Y H:i" }}</small>
+                                        <br>
+                                        {% if not message.is_read %}
+                                        <span class="badge bg-primary">Жаңа</span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <p class="mb-1 mt-2">{{ message.content|truncatechars:80 }}</p>
+                            </a>
+                            {% endfor %}
+                        </div>
+                        {% else %}
+                        <div class="text-center py-5">
+                            <i class="fas fa-envelope fa-4x text-muted mb-3"></i>
+                            <h4>Алынған хабарлар жоқ</h4>
+                            <p class="text-muted">Сізге әлі хабар жіберілмеген</p>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            
+            <div class="tab-pane fade" id="sent">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="fas fa-paper-plane me-2"></i> Жіберілген хабарлар</h5>
+                    </div>
+                    <div class="card-body p-0">
+                        {% if sent_messages %}
+                        <div class="list-group list-group-flush">
+                            {% for message in sent_messages %}
+                            <a href="{% url 'message_detail' message.id %}" class="list-group-item list-group-item-action">
+                                <div class="d-flex w-100 justify-content-between">
+                                    <div>
+                                        <strong>{{ message.receiver.get_full_name|default:message.receiver.username }}</strong>
+                                        <br>
+                                        <small class="text-muted">{{ message.subject }}</small>
+                                    </div>
+                                    <div class="text-end">
+                                        <small class="text-muted">{{ message.sent_at|date:"d.m.Y H:i" }}</small>
+                                        <br>
+                                        {% if message.is_read %}
+                                        <span class="badge bg-success">Оқылған</span>
+                                        {% else %}
+                                        <span class="badge bg-warning">Оқылмаған</span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <p class="mb-1 mt-2">{{ message.content|truncatechars:80 }}</p>
+                            </a>
+                            {% endfor %}
+                        </div>
+                        {% else %}
+                        <div class="text-center py-5">
+                            <i class="fas fa-paper-plane fa-4x text-muted mb-3"></i>
+                            <h4>Жіберілген хабарлар жоқ</h4>
+                            <p class="text-muted">Сіз әлі ешкімге хабар жібермегенсіз</p>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card mt-3">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i> Хабарлама туралы</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6>Нұсқаулар:</h6>
+                        <ul>
+                            <li>Хабарларды тек жүйеге тіркелген пайдаланушыларға жібере аласыз</li>
+                            <li>Хабарды оқығаннан кейін ол "оқылған" деп белгіленеді</li>
+                            <li>Жіберілген хабарларды өшіру мүмкін емес</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <h6>Жылдам байланыс:</h6>
+                        <ul>
+                            <li>Клуб лидеріне клубтың істері бойынша хабарласыңыз</li>
+                            <li>Админге жүйе бойынша сұрақтар қойыңыз</li>
+                            <li>Клуб мүшелерімен байланысыңыз</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const tabLinks = document.querySelectorAll('.list-group-item-action');
+        tabLinks.forEach(link => {
+            link.addEventListener('click', function() {
+                tabLinks.forEach(l => l.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+        
+        const urlParams = new URLSearchParams(window.location.search);
+        const tabParam = urlParams.get('tab');
+        if (tabParam === 'sent') {
+            const sentTab = document.querySelector('a[href="#sent"]');
+            const receivedTab = document.querySelector('a[href="#received"]');
+            if (sentTab && receivedTab) {
+                receivedTab.classList.remove('active');
+                sentTab.classList.add('active');
+                document.querySelector('#received').classList.remove('show', 'active');
+                document.querySelector('#sent').classList.add('show', 'active');
+            }
+        }
+    });
+</script>
+{% endblock %}

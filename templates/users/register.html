@@ -1,0 +1,133 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Тіркелу - Университет Клубтары{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8 col-lg-7">
+        <div class="card shadow-lg">
+            <div class="card-header bg-success text-white text-center py-4">
+                <h3><i class="fas fa-user-plus me-2"></i> Тіркелу</h3>
+                <p class="mb-0">Университет клубтары жүйесіне тіркеліңіз</p>
+            </div>
+            <div class="card-body p-4">
+                <form method="POST">
+                    {% csrf_token %}
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="username" class="form-label">Пайдаланушы аты*</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fas fa-user"></i></span>
+                                    <input type="text" name="username" id="username" class="form-control" required>
+                                </div>
+                                <small class="form-text text-muted">Басқалар сізді осымен таниды</small>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="email" class="form-label">Электрондық пошта*</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fas fa-envelope"></i></span>
+                                    <input type="email" name="email" id="email" class="form-control" required>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="first_name" class="form-label">Аты</label>
+                                <input type="text" name="first_name" id="first_name" class="form-control">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="last_name" class="form-label">Тегі</label>
+                                <input type="text" name="last_name" id="last_name" class="form-control">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="student_id" class="form-label">Студенттік номер</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fas fa-id-card"></i></span>
+                                    <input type="text" name="student_id" id="student_id" class="form-control">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="phone" class="form-label">Телефон</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fas fa-phone"></i></span>
+                                    <input type="tel" name="phone" id="phone" class="form-control">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="password1" class="form-label">Құпия сөз*</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                                    <input type="password" name="password1" id="password1" class="form-control" required>
+                                </div>
+                                <small class="form-text text-muted">
+                                    Кемінде 8 символ, әріптер және сандар
+                                </small>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="password2" class="form-label">Құпия сөзді қайталау*</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                                    <input type="password" name="password2" id="password2" class="form-control" required>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" id="terms" required>
+                        <label class="form-check-label" for="terms">
+                            Мен <a href="#" class="text-decoration-none">пайдалану шарттарын</a> қабылдаймын
+                        </label>
+                    </div>
+                    
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-success btn-lg">
+                            <i class="fas fa-user-plus me-2"></i> Тіркелу
+                        </button>
+                        <a href="{% url 'login' %}" class="btn btn-outline-secondary">
+                            <i class="fas fa-sign-in-alt me-2"></i> Кіру бетіне оралу
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <div class="card mt-4">
+            <div class="card-body">
+                <h5><i class="fas fa-info-circle me-2"></i> Тіркелу туралы ақпарат</h5>
+                <ul class="mb-0">
+                    <li>Тіркелгеннен кейін сіз клубтарды көре аласыз</li>
+                    <li>Өзіңізге ұнаған клубтарға мүше болуға өтініш бере аласыз</li>
+                    <li>Клубтардың іс-шараларына қатыса аласыз</li>
+                    <li>Хабарландырулар аласыз</li>
+                    <li>Админ сіздің өтінішіңізді бекіткен соң клуб мүшесі боласыз</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
